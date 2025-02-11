@@ -33,13 +33,6 @@ db.books = {
 }
 
 
-@router.get(
-    "/test", response_model=OrderedDict[int, Book], status_code=status.HTTP_200_OK
-)
-async def return_hello_world() -> str:
-    return "Hello World"
-
-
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_book(book: Book):
     db.add_book(book)
