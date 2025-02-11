@@ -16,16 +16,6 @@ jobs:
         with:
           python-version: 3.11
 
-      # Create and activate virtual environment
-      - name: Set up virtual environment
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-
-      # Install dependencies
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
       # Deploy to server
       - name: Deploy to Staging Server
         uses: appleboy/ssh-action@v1.0.3
@@ -34,15 +24,42 @@ jobs:
           key: ${{secrets.SERVER_SSH_KEY}}
           username: ${{secrets.SERVER_USERNAME}}
           script: |
+            echo "Starting deployment..."
+
             # Navigate to project directory
             cd fastapi-book-project-hng12-stage-2-task
 
             # Pull latest changes
+            echo "Pulling latest changes..."
             git fetch --all
-            git pull origin main
+            git reset --hard origin/main
+
+            # Setup virtual environment
+            echo "Setting up virtual environment..."
+            python3 -m venv venv || exit 1
+            source venv/bin/activate || exit 1
+
+            # Install dependencies
+            echo "Installing dependencies..."
+            pip install -r requirements.txt || exit 1
 
             # Stop existing application
-            pkill -f "uvicorn main:app" || true
+            echo "Stopping existing application..."
+            pkill -f "uvicorn main:app" || echo "No existing process found"
+
+            # Small delay to ensure port is freed
+            sleep 3
 
             # Start application
+            echo "Starting application..."
             nohup uvicorn main:app --host 0.0.0.0 --port 8000 > app.log 2>&1 &
+
+            # Verify application is running
+            sleep 5
+            if pgrep -f "uvicorn main:app" > /dev/null; then
+              echo "Application started successfully"
+            else
+              echo "Failed to start application"
+              tail -n 50 app.log
+              exit 1
+            fi
