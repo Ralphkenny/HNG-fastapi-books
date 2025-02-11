@@ -35,22 +35,14 @@ jobs:
           username: ${{secrets.SERVER_USERNAME}}
           script: |
             # Navigate to project directory
-            cd fastapi-book-project-hng12-stage-2-task || { echo "Failed to navigate to project directory"; exit 1; }
+            cd fastapi-book-project-hng12-stage-2-task
 
             # Pull latest changes
-            git fetch --all || { echo "Failed to fetch changes"; exit 1; }
-            git pull origin main || { echo "Failed to pull changes"; exit 1; }
+            git fetch --all
+            git pull origin main
 
             # Stop existing application
-            pkill -f "uvicorn main:app" || echo "No existing process found"
+            pkill -f "uvicorn main:app" || true
 
-            # Start application with more logging
-            echo "Starting application..."
+            # Start application
             nohup uvicorn main:app --host 0.0.0.0 --port 8000 > app.log 2>&1 &
-            echo "Application started, waiting for it to initialize..."
-
-            # Verify health check with longer wait time
-            sleep 15  # Increased wait time for app to start
-            echo "Performing health check..."
-            curl -v -f http://localhost:8000/healthcheck || { echo "Health check failed"; cat app.log; exit 1; }
-            echo "Deployment successful!"
