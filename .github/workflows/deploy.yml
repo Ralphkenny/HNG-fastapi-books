@@ -43,6 +43,11 @@ jobs:
             echo "Installing dependencies..."
             pip install -r requirements.txt || exit 1
 
+            # Stop existing application
+            pkill -f "uvicorn main:app" || true
+            echo "Existing application stopped"
+            sleep 8
+
             # Start application
             echo "Starting application..."
             nohup uvicorn main:app --host 0.0.0.0 --port 8000 > app.log 2>&1 &
