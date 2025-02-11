@@ -39,6 +39,17 @@ jobs:
             python3 -m venv venv || exit 1
             source venv/bin/activate || exit 1
 
+            # Upgrade pip
+            python -m pip install --upgrade pip || exit 1
+
+            #Install fastapi
+            pip install fastapi || exit 1
+            echo "FastAPI installed successfully"
+
+            # Install dependencies
+            echo "Installing dependencies..."
+            pip install -r requirements.txt || exit 1
+
             # Stop existing application if running
             echo "Stopping existing application..."
             pkill -f "uvicorn main:app" || echo "No existing process found"
