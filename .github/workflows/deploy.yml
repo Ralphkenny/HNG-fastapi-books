@@ -52,11 +52,13 @@ jobs:
 
             # Stop existing application if running
             echo "Stopping existing application..."
-            pkill uvicorn || echo "No existing process found"
+            killall uvicorn || echo "No existing process found"
+            sleep 8
 
             # Start application
             echo "Starting application..."
             nohup uvicorn main:app --host 0.0.0.0 --port 8000 > app.log 2>&1 &
+            echo "Application started successfully"
 
             # Verify application is running
             sleep 8
