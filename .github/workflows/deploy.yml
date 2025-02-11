@@ -53,6 +53,7 @@ jobs:
             # Stop existing application if running
             echo "Stopping existing application..."
             killall uvicorn || echo "No existing process found"
+            echo "Application stopped successfully"
 
             # Start application
             echo "Starting application..."
