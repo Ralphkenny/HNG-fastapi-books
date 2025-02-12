@@ -3,6 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from api.router import api_router
 from core.config import settings
+import sys
+print(sys.path)
+
+
 
 app = FastAPI()
 

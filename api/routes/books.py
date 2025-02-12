@@ -42,7 +42,7 @@ async def get_books() -> OrderedDict[int, Book]:
     return db.get_books()
 
 # 📌 NEW ENDPOINT: Get a book by ID
-@router.get("/api/v1/books/{book_id}", response_model=Book, status_code=status.HTTP_200_OK)
+@router.get("/{book_id}", response_model=Book, status_code=status.HTTP_200_OK)
 async def get_book(book_id: int) -> Book:
     book = db.books.get(book_id)  # Fetch book by ID
     if not book:
