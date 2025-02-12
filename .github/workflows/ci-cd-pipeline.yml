@@ -54,7 +54,7 @@ jobs:
           git pull origin main
           source venv/bin/activate
           pip install -r requirements.txt
-          systemctl restart your-app-service  # Restart your application
+          uvicorn main:app
         EOF
 
     - name: Notify Deployment Status
