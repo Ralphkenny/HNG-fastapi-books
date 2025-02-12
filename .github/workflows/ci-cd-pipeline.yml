@@ -19,7 +19,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: 3.12  # Use the installed Python version on your server
+        python-version: 3.12
 
     - name: Install dependencies
       run: |
@@ -49,12 +49,20 @@ jobs:
 
     - name: Deploy to AWS EC2
       run: |
-        ssh ubuntu@${{ secrets.DEPLOY_SERVER_IP }} << 'EOF'
-          cd /path/to/your/app
+        ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.DEPLOY_SERVER_IP }} << 'EOF'
+          cd /HNG-fastapi-books
           git pull origin main
           source venv/bin/activate
           pip install -r requirements.txt
-          uvicorn main:app
+
+          # Stop existing Uvicorn process if running
+          pkill -f "uvicorn" || true  
+
+          # Run Uvicorn with the full path
+          nohup /HNG-fastapi-books/venv/bin/uvicorn main:app --host 0.0.0.0 --port 8000 > uvicorn.log 2>&1 &
+          
+          # Check if it's running
+          pgrep -fa "uvicorn"
         EOF
 
     - name: Notify Deployment Status
